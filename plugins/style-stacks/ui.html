@@ -27,7 +27,7 @@ try { window.localStorage.getItem('x'); } catch (e) { const store = new Map(); O
 #style-classes #list{max-height:210px;overflow:auto}
 #style-classes .sc-checks{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:4px 0 12px}
 #style-classes label{color:inherit}#style-classes .sc-checks label{display:flex;align-items:center;gap:5px}
-#style-classes input[type=checkbox]{accent-color:var(--figma-color-bg-brand,#0d99ff);margin:0}
+#style-classes .sc-unavailable{opacity:.45}#style-classes input[type=checkbox]{accent-color:var(--figma-color-bg-brand,#0d99ff);margin:0}
 #style-classes #save,#style-classes #update-class{width:100%}
 #style-classes #feedback{padding:12px 16px;font-size:11px;overflow-wrap:anywhere}#style-classes #feedback.sc-error{color:var(--figma-color-text-danger,#d43)}
 #style-classes .sc-hint{font-size:10px;margin-top:8px}#style-classes [hidden]{display:none!important}
@@ -46,6 +46,7 @@ try { window.localStorage.getItem('x'); } catch (e) { const store = new Map(); O
 const labels={fills:'Fills',strokes:'Strokes',radii:'Corner radii',effects:'Effects',layout:'Auto Layout'};
 let state={classes:[],count:0,total:0,source:null,groups:[]},busy=false,renaming=null,nameEdited=false;
 let pending=null,sequence=0,watchdog;
+const choice={};
 let menuId=null,deleting=null,listKey='';
 const $=id=>document.getElementById(id);
 // Injected from figma.pluginId before showUI, not the manifest UUID.
@@ -53,9 +54,9 @@ const pluginId="__STYLE_STACKS_RUNTIME_ID__";
 function post(message){parent.postMessage({pluginMessage:message,pluginId},'*');}
 function recover(text){clearTimeout(watchdog);pending=null;busy=false;$('feedback').textContent=text;$('feedback').className='sc-error';render();}
 function send(message){if(busy)return;closeMenu();pending=Date.now()+'-'+(++sequence);busy=true;render();watchdog=setTimeout(()=>{recover('No completion received. Check Saved classes before retrying; the action may have completed.');post({type:'ready'});},10000);try{post({...message,requestId:pending});}catch(error){recover('Could not send action: '+error.message);}}
-for(const [key,label] of Object.entries(labels)){const l=document.createElement('label'),c=document.createElement('input');c.type='checkbox';c.value=key;c.checked=true;c.id='group-'+key;c.onchange=controls;l.append(c,document.createTextNode(label));$('checks').append(l);}
+for(const [key,label] of Object.entries(labels)){const l=document.createElement('label'),c=document.createElement('input');c.type='checkbox';c.value=key;choice[key]=true;c.checked=true;c.id='group-'+key;c.onchange=()=>{choice[key]=c.checked;controls();};l.append(c,document.createTextNode(label));$('checks').append(l);}
 function suggestedName(){const base=(state.source||'New class').trim().slice(0,80)||'New class';let result=base,index=2;while(state.classes.some(c=>c.name.toLowerCase()===result.toLowerCase())){const suffix=' '+index++;result=base.slice(0,80-suffix.length)+suffix;}return result;}
-function controls(){for(const key of Object.keys(labels))$('group-'+key).disabled=busy||state.source===null||!state.groups.includes(key);$('name').disabled=busy||state.source===null;const name=$('name').value.trim(),hasGroups=Object.keys(labels).some(k=>$('group-'+k).checked&&!$('group-'+k).disabled),duplicate=state.classes.some(c=>c.name.toLowerCase()===name.toLowerCase());const reason=busy?'Working…':state.source===null?(state.total>1?'Select just one compatible layer to save a class.':'Select one unlocked, compatible layer to save a class.'):!name?'Enter a class name to enable Save.':duplicate?'A class with this name already exists. Choose another name.':!hasGroups?'Choose at least one supported property group.':'';$('save').disabled=!!reason;$('save-hint').textContent=reason||'Ready to save. You can edit the suggested class name.';}
+function controls(){for(const key of Object.keys(labels)){const box=$('group-'+key),unsupported=state.source!==null&&!state.groups.includes(key);box.disabled=busy||state.source===null||unsupported;box.checked=choice[key]&&!unsupported;box.parentElement.classList.toggle('sc-unavailable',unsupported);box.parentElement.title=unsupported?'Not available for this layer type':'';}$('name').disabled=busy||state.source===null;const name=$('name').value.trim(),hasGroups=Object.keys(labels).some(k=>$('group-'+k).checked&&!$('group-'+k).disabled),duplicate=state.classes.some(c=>c.name.toLowerCase()===name.toLowerCase());const reason=busy?'Working…':state.source===null?(state.total>1?'Select just one compatible layer to save a class.':'Select one unlocked, compatible layer to save a class.'):!name?'Enter a class name to enable Save.':duplicate?'A class with this name already exists. Choose another name.':!hasGroups?'Choose at least one supported property group.':'';$('save').disabled=!!reason;$('save-hint').textContent=reason||'Ready to save. You can edit the suggested class name.';}
 function action(label,handler,disabled=false){const b=document.createElement('button');b.textContent=label;b.disabled=disabled;b.onclick=handler;return b;}
 function menuTrigger(){return [...$('list').children].find(row=>row.dataset.classId===menuId)?.children[1];}
 function closeMenu(focus=false){const trigger=menuTrigger();if(trigger)trigger.setAttribute('aria-expanded','false');menuId=null;$('class-menu').hidden=true;if(focus&&trigger)trigger.focus();}

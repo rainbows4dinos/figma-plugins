@@ -17,6 +17,8 @@ const FIELDS: Record<Group, string[]> = {
 };
 const BINDABLE = new Set(['strokeWeight', 'strokeTopWeight', 'strokeRightWeight', 'strokeBottomWeight', 'strokeLeftWeight', 'cornerRadius', 'topLeftRadius', 'topRightRadius', 'bottomLeftRadius', 'bottomRightRadius', 'paddingLeft', 'paddingRight', 'paddingTop', 'paddingBottom', 'itemSpacing', 'counterAxisSpacing']);
 const STYLE_FIELDS: Partial<Record<Group, string>> = { fills: 'fillStyleId', strokes: 'strokeStyleId', effects: 'effectStyleId' };
+type LayoutNode = FrameNode | ComponentNode | ComponentSetNode | InstanceNode;
+const hasLayout = (node: SceneNode): node is LayoutNode => node.type === 'FRAME' || node.type === 'COMPONENT' || node.type === 'COMPONENT_SET' || node.type === 'INSTANCE';
 const messageOf = (e: unknown): string => e instanceof Error ? e.message : String(e);
 
 // Serialization module: references are encoded deliberately, never JSON-stringify API objects.
@@ -117,7 +119,7 @@ const DocumentStorage = {
 const Capture = {
   supported(node: SceneNode, group: Group): boolean {
     if (node.type === 'TEXT' && group === 'fills' && ('fills' in node && node.fills === figma.mixed)) return false;
-    if (group === 'layout') return node.type === 'FRAME' && node.layoutMode !== 'GRID';
+    if (group === 'layout') return hasLayout(node) && node.layoutMode !== 'GRID';
     return FIELDS[group].some(field => field in node && (node as Access)[field] !== figma.mixed);
   },
   group(node: SceneNode, group: Group, lookups: Lookup[]): RecipeGroup {
@@ -178,8 +180,8 @@ const Application = {
   async group(node: SceneNode, group: Group, recipe: RecipeGroup, warnings: Set<string>): Promise<void> {
     const n = node as Access;
     if (!Capture.supported(node, group)) throw new Error('Unsupported ' + group + ' on ' + node.name);
-    if (group === 'layout' && node.type === 'FRAME' && node.layoutMode !== 'NONE' && (node.primaryAxisSizingMode === 'AUTO' || node.counterAxisSizingMode === 'AUTO')) throw new Error('Auto Layout skipped on hug-sized frames to preserve sizing.');
-    if (group === 'strokes' && node.type === 'FRAME' && node.layoutMode !== 'NONE' && node.strokesIncludedInLayout && (node.primaryAxisSizingMode === 'AUTO' || node.counterAxisSizingMode === 'AUTO')) throw new Error('Strokes skipped where they would resize a hug-sized frame.');
+    if (group === 'layout' && hasLayout(node) && node.layoutMode !== 'NONE' && (node.primaryAxisSizingMode === 'AUTO' || node.counterAxisSizingMode === 'AUTO')) throw new Error('Auto Layout skipped on hug-sized frames to preserve sizing.');
+    if (group === 'strokes' && hasLayout(node) && node.layoutMode !== 'NONE' && node.strokesIncludedInLayout && (node.primaryAxisSizingMode === 'AUTO' || node.counterAxisSizingMode === 'AUTO')) throw new Error('Strokes skipped where they would resize a hug-sized frame.');
     if (node.type === 'TEXT') {
       if (node.hasMissingFont) throw new Error('Missing fonts on ' + node.name);
       for (const font of node.getRangeAllFontNames(0, node.characters.length)) await figma.loadFontAsync(font);
@@ -221,7 +223,7 @@ const Application = {
       if (style) await Application.style(node, group, style.id);
       else warnings.add('Missing styles: saved properties used instead.');
     }
-    if (group === 'layout' && node.type === 'FRAME') {
+    if (group === 'layout' && hasLayout(node)) {
       // Never copy HUG/FILL, layoutGrow, constraints, min/max, width or height.
       node.primaryAxisSizingMode = 'FIXED';
       node.counterAxisSizingMode = 'FIXED';
@@ -313,11 +315,11 @@ figma.ui.onmessage = async (msg: Message) => {
           if (!Capture.supported(node, group)) { warnings.add(group + ' skipped on incompatible layers.'); continue; }
           // Snapshot each group so a rejected API write cannot leave it half-applied.
           try {
-            if (group === 'layout' && node.type === 'FRAME' && node.layoutMode !== 'NONE' && (node.primaryAxisSizingMode === 'AUTO' || node.counterAxisSizingMode === 'AUTO')) {
+            if (group === 'layout' && hasLayout(node) && node.layoutMode !== 'NONE' && (node.primaryAxisSizingMode === 'AUTO' || node.counterAxisSizingMode === 'AUTO')) {
               warnings.add('Auto Layout skipped on hug-sized frames to preserve sizing.');
               continue;
             }
-            if (group === 'strokes' && node.type === 'FRAME' && node.layoutMode !== 'NONE' && node.strokesIncludedInLayout && (node.primaryAxisSizingMode === 'AUTO' || node.counterAxisSizingMode === 'AUTO')) {
+            if (group === 'strokes' && hasLayout(node) && node.layoutMode !== 'NONE' && node.strokesIncludedInLayout && (node.primaryAxisSizingMode === 'AUTO' || node.counterAxisSizingMode === 'AUTO')) {
               warnings.add('Strokes skipped where they would resize a hug-sized frame.');
               continue;
             }
