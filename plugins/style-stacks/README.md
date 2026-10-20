@@ -1,3 +1,5 @@
+<img src="assets/style-stacks-thumb.svg" alt="" width="64" height="64">
+
 # Style Stacks
 
 A Figma plugin that works as a persistent, named clipboard for reusable styling properties. Save a layer's styling as a named *class*, then apply it to any other layer without touching its size, position, or contents.
@@ -36,6 +38,7 @@ To load the plugin in Figma: **Plugins → Development → Import plugin from ma
 | `code.ts` | Plugin logic: serialization, storage, capture, application |
 | `ui.html` | Plugin UI (HTML, CSS, and JS in one file) |
 | `manifest.json` | Figma plugin manifest |
+| `assets/` | Icon (SVG and PNG) used in the UI, README and Community listing |
 | `product-brief.md` | Original brief and implementation notes |
 
 ## Limitations
