@@ -1,12 +1,10 @@
 {
-  "name": "style-stacks",
-  "version": "1.0.0",
+  "name": "figma-plugins",
   "private": true,
-  "description": "Your reusable style clipboard (Figma plugin)",
+  "workspaces": ["plugins/*", "packages/*"],
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch",
-    "typecheck": "tsc --noEmit"
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
   },
   "devDependencies": {
     "@figma/plugin-typings": "*",

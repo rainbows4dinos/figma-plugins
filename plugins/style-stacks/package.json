@@ -1,0 +1,11 @@
+{
+  "name": "style-stacks",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Your reusable style clipboard (Figma plugin)",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "typecheck": "tsc --noEmit"
+  }
+}
