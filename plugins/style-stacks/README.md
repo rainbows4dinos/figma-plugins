@@ -24,7 +24,7 @@ Classes are reusable recipes, not live links: updating a class does not change l
 From the repo root, run `npm install`, then:
 
 ```sh
-npm run build -w style-stacks       # compile code.ts -> code.js
+npm run build -w style-stacks       # build ui.html and compile code.ts -> code.js
 npm run watch -w style-stacks       # rebuild on change
 npm run typecheck -w style-stacks
 ```
@@ -36,7 +36,7 @@ To load the plugin in Figma: **Plugins → Development → Import plugin from ma
 | File | Purpose |
 |---|---|
 | `code.ts` | Plugin logic: serialization, storage, capture, application |
-| `ui.html` | Plugin UI (HTML, CSS, and JS in one file) |
+| `src/ui.html`, `src/ui.css`, `src/ui.js` | Plugin UI source, built into the generated `ui.html` |
 | `manifest.json` | Figma plugin manifest |
 | `assets/` | Icon (SVG and PNG) used in the UI, README and Community listing |
 | `product-brief.md` | Original brief and implementation notes |

@@ -1,3 +1,5 @@
 node_modules/
 code.js
+# generated from each plugin's src/ui.html by packages/ui/build.mjs
+plugins/*/ui.html
 .DS_Store

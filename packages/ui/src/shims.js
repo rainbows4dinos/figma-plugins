@@ -1,0 +1,1 @@
+try { window.localStorage.getItem('x'); } catch (e) { const store = new Map(); Object.defineProperty(window, 'localStorage', { value: { getItem:k=>store.get(k)??null, setItem:(k,v)=>store.set(k,String(v)),removeItem:k=>store.delete(k),clear:()=>store.clear(),key:i=>Array.from(store.keys())[i]??null,get length(){return store.size;} }, configurable:true }); }

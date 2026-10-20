@@ -1,0 +1,18 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<script>
+@@include(@ui/shims.js)
+</script>
+<style>
+@@include(@ui/tokens.css)
+@@include(src/ui.css)
+</style></head><body id="style-classes">
+<header><img class="sc-logo" alt="" width="32" height="32" src="@@asset(assets/style-stacks-thumb.svg)"><div><h1>Style Stacks</h1><p>Your reusable style clipboard</p></div></header>
+<div id="selection" role="status">Select a compatible layer to get started.</div>
+<section><h2>Saved classes</h2><div id="list"></div><div id="editor" class="sc-inline-editor" hidden><label for="rename">Class name</label><input id="rename" type="text" maxlength="80"><div class="sc-actions"><button id="cancel-rename">Cancel</button><button id="confirm-rename" class="sc-primary">Rename</button></div><p id="update-hint" class="sc-hint"></p><button id="update-class" aria-describedby="update-hint">Update from selection</button></div><div id="delete-confirm" class="sc-inline-editor" hidden><p id="delete-question"></p><div class="sc-actions"><button id="cancel-delete">Cancel</button><button id="confirm-delete" class="sc-danger">Delete class</button></div></div></section>
+<section><h2>Save new class</h2><label for="name">Class name</label><input id="name" type="text" maxlength="80" placeholder="e.g. card" autocomplete="off" aria-describedby="save-hint"><div id="checks" class="sc-checks"></div><button id="save" class="sc-primary" disabled aria-describedby="save-hint">Save class from selection</button><p id="save-hint" class="sc-hint" role="status"></p><p class="sc-hint">Classes are recipes, not live links. Auto Layout reflows children; sizing is not copied.</p></section>
+<div id="feedback" role="status" aria-live="polite"></div>
+<div id="class-menu" class="sc-menu" role="menu" aria-label="Class actions" hidden><button id="edit-class" role="menuitem">Edit</button><button id="delete-class" class="sc-danger" role="menuitem">Delete</button></div>
+<script>
+@@include(src/ui.js)
+</script></body></html>

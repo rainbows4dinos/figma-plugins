@@ -1,0 +1,30 @@
+/* PropsKit injects global native-button rules; keep this panel independent. */
+#style-classes,#style-classes *{box-sizing:border-box}
+#style-classes{margin:0;background:var(--figma-color-bg,#fff);color:var(--figma-color-text,#222);font:var(--ds-font);letter-spacing:normal}
+#style-classes header,#style-classes section{padding:var(--ds-space-4);border-bottom:1px solid var(--figma-color-border,#e5e5e5)}
+#style-classes header{display:flex;align-items:center;gap:12px}#style-classes .sc-logo{flex:0 0 32px;width:32px;height:32px;border-radius:6px}#style-classes header p{margin:0}
+#style-classes h1{font-size:16px;margin:0 0 2px}#style-classes h2{font-size:12px;margin:0 0 10px}
+#style-classes p{margin:4px 0;color:var(--figma-color-text-secondary,#777)}
+#style-classes button,#style-classes input{font:inherit;color:inherit;letter-spacing:normal}
+#style-classes button{display:inline-block;height:auto;min-width:0;margin:0;font-weight:400;cursor:pointer;border:1px solid var(--figma-color-border,#ddd);background:var(--figma-color-bg,#fff);border-radius:var(--ds-radius);padding:7px 10px}
+#style-classes button:hover{background:var(--figma-color-bg-hover,#f5f5f5)}#style-classes button:disabled{opacity:.4;cursor:default}
+#style-classes .sc-primary{background:var(--figma-color-bg-brand,#0d99ff);color:var(--figma-color-text-onbrand,#fff);border-color:transparent}#style-classes .sc-primary:hover{background:var(--figma-color-bg-brand-hover,#007be5)}
+#style-classes input[type=text]{display:block;height:auto;width:100%;padding:8px;border:1px solid var(--figma-color-border,#ddd);border-radius:var(--ds-radius);background:var(--figma-color-bg,#fff);margin:6px 0 9px}
+#style-classes button:focus-visible,#style-classes input:focus-visible,#style-classes .sc-name:focus-visible{outline:2px solid var(--figma-color-border-brand,#0d99ff);outline-offset:2px}
+#style-classes #selection{padding:9px 16px;background:var(--figma-color-bg-secondary,#f5f5f5);font-size:11px}
+#style-classes .sc-row{display:flex;gap:5px;margin-top:6px;align-items:stretch}
+#style-classes .sc-apply{text-align:left;flex:1;min-width:0;padding:10px;overflow:hidden}
+#style-classes .sc-name{display:block;color:inherit;font-weight:600;white-space:nowrap;overflow-x:auto;overflow-y:hidden;overflow-wrap:normal;text-overflow:clip;max-width:100%}
+#style-classes .sc-menu-button{flex:0 0 30px;width:30px;padding:3px}
+#style-classes .sc-menu{position:fixed;z-index:5;background:var(--figma-color-bg,#fff);border:1px solid var(--figma-color-border,#ddd);box-shadow:0 3px 12px #0002;border-radius:var(--ds-radius);padding:4px;width:125px}
+#style-classes .sc-menu button{display:block;width:100%;border:0;text-align:left}
+#style-classes .sc-danger{color:var(--figma-color-text-danger,#d43)}
+#style-classes #list{max-height:210px;overflow:auto}
+#style-classes .sc-checks{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:4px 0 12px}
+#style-classes label{color:inherit}#style-classes .sc-checks label{display:flex;align-items:center;gap:5px}
+#style-classes .sc-unavailable{opacity:.45}#style-classes input[type=checkbox]{accent-color:var(--figma-color-bg-brand,#0d99ff);margin:0}
+#style-classes #save,#style-classes #update-class{width:100%}
+#style-classes #feedback{padding:12px 16px;font-size:11px;overflow-wrap:anywhere}#style-classes #feedback.sc-error{color:var(--figma-color-text-danger,#d43)}
+#style-classes .sc-hint{font-size:10px;margin-top:8px}#style-classes [hidden]{display:none!important}
+#style-classes .sc-inline-editor{padding:10px;border:1px solid var(--figma-color-border,#ddd);margin-top:6px;border-radius:var(--ds-radius);overflow-wrap:anywhere}
+#style-classes .sc-actions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}

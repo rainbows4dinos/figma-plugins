@@ -4,8 +4,8 @@
   "private": true,
   "description": "Your reusable style clipboard (Figma plugin)",
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch",
+    "build": "node ../../packages/ui/build.mjs . && tsc",
+    "watch": "node ../../packages/ui/build.mjs . --watch & tsc --watch",
     "typecheck": "tsc --noEmit"
   }
 }
