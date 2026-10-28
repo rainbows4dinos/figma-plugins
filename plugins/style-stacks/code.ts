@@ -1,11 +1,14 @@
 // Independent, single-file modules keep the official plugin runtime dependency-free.
 type Group = 'fills' | 'strokes' | 'radii' | 'effects' | 'layout';
 type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
-type Reference = { id: string; key: string; remote: boolean };
+// `name` is the variable or style name at capture time: lets exporters read a recipe without a Figma lookup.
+type Reference = { id: string; key: string; remote: boolean; name?: string };
 type Lookup = { kind: 'variable' | 'style'; ref: Reference };
 type RecipeGroup = { values: Record<string, Json>; bindings: Record<string, Reference>; style?: Reference };
-type StyleClass = { id: string; name: string; createdAt: number; updatedAt: number; groups: Partial<Record<Group, RecipeGroup>> };
-type Database = { schemaVersion: 1; classes: StyleClass[] };
+// `rev` increases whenever the recipe changes (not on rename), so copies elsewhere can tell they are stale.
+type StyleClass = { id: string; name: string; rev: number; createdAt: number; updatedAt: number; groups: Partial<Record<Group, RecipeGroup>> };
+type Database = { schemaVersion: 2; classes: StyleClass[] };
+const SCHEMA_VERSION = 2;
 type Access = SceneNode & Record<string, unknown>;
 const GROUPS: Group[] = ['fills', 'strokes', 'radii', 'effects', 'layout'];
 const FIELDS: Record<Group, string[]> = {
@@ -45,7 +48,7 @@ const Serialization = {
   },
   async enrich(lookups: Lookup[], warnings: Set<string>): Promise<void> {
     if (!lookups.length) return;
-    const results = new Map<string, { key: string; remote: boolean }>();
+    const results = new Map<string, { key: string; remote: boolean; name: string }>();
     const pending = new Map<string, Promise<void>>();
     for (const { kind, ref } of lookups) {
       const key = kind + ':' + ref.id;
@@ -53,7 +56,7 @@ const Serialization = {
       pending.set(key, (async () => {
         try {
           const found = kind === 'variable' ? await figma.variables.getVariableByIdAsync(ref.id) : await figma.getStyleByIdAsync(ref.id);
-          if (found) results.set(key, { key: found.key, remote: found.remote });
+          if (found) results.set(key, { key: found.key, remote: found.remote, name: found.name });
         } catch { /* Optional metadata must not prevent saving IDs and literal values. */ }
       })());
     }
@@ -64,7 +67,7 @@ const Serialization = {
     } finally { if (timer !== undefined) clearTimeout(timer); }
     for (const { kind, ref } of lookups) {
       const metadata = results.get(kind + ':' + ref.id);
-      if (metadata) { ref.key = metadata.key; ref.remote = metadata.remote; }
+      if (metadata) { ref.key = metadata.key; ref.remote = metadata.remote; ref.name = metadata.name; }
       else warnings.add('Some reference metadata was unavailable. Bindings and styles were saved by ID for this document; published-key recovery may be unavailable.');
     }
     // Late API completions only touch the private results map, never saved recipes.
@@ -96,17 +99,33 @@ const Serialization = {
   },
 };
 
-// Storage module: versioned document-scoped envelope. No client storage or backend.
+// Schema module: validation and upgrades shared by every store (document now, library next).
+const Schema = {
+  // v1 -> v2: add rev. Reference names stay absent until a class is next captured.
+  upgrade(data: unknown): Database {
+    const db = data as { schemaVersion?: number; classes?: unknown };
+    if (!db || (db.schemaVersion !== 1 && db.schemaVersion !== SCHEMA_VERSION) || !Array.isArray(db.classes)) {
+      throw new Error('Saved classes use an unsupported or damaged format. Existing data was not changed.');
+    }
+    const classes = db.classes.map(c => Schema.styleClass(c));
+    return { schemaVersion: SCHEMA_VERSION, classes };
+  },
+  styleClass(data: unknown): StyleClass {
+    const c = data as StyleClass;
+    if (!c || typeof c.id !== 'string' || typeof c.name !== 'string' || !c.groups || Object.keys(c.groups).some(g => !GROUPS.includes(g as Group))) {
+      throw new Error('Saved classes use an unsupported or damaged format. Existing data was not changed.');
+    }
+    return { ...c, rev: typeof c.rev === 'number' && c.rev > 0 ? c.rev : 1 };
+  },
+};
+
+// Storage module: versioned document-scoped envelope. Key name predates the rename; kept for existing files.
 const DocumentStorage = {
   key: 'style_classes_v1',
   read(): Database {
     const raw = figma.root.getPluginData(DocumentStorage.key);
-    if (!raw) return { schemaVersion: 1, classes: [] };
-    const db = JSON.parse(raw) as Database;
-    if (db.schemaVersion !== 1 || !Array.isArray(db.classes) || db.classes.some(c => !c || typeof c.id !== 'string' || typeof c.name !== 'string' || !c.groups || Object.keys(c.groups).some(g => !GROUPS.includes(g as Group)))) {
-      throw new Error('Saved classes use an unsupported or damaged format. Existing data was not changed.');
-    }
-    return db;
+    if (!raw) return { schemaVersion: SCHEMA_VERSION, classes: [] };
+    return Schema.upgrade(JSON.parse(raw));
   },
   write(db: Database): void {
     const raw = JSON.stringify(db);
@@ -288,7 +307,7 @@ figma.ui.onmessage = async (msg: Message) => {
       if (msg.type === 'update' && (currentIndex < 0 || JSON.stringify(latest.classes[currentIndex]) !== JSON.stringify(existing))) throw new Error('Class changed while capturing. Try updating again.');
       if (latest.classes.some(c => (msg.type !== 'update' || c.id !== existing.id) && c.name.toLowerCase() === name.toLowerCase())) throw new Error('A class with that name already exists.');
       const now = Date.now();
-      const result: StyleClass = { id: existing?.id ?? now.toString(36) + Math.random().toString(36).slice(2, 9), name, groups: groupsData, createdAt: existing?.createdAt ?? now, updatedAt: now };
+      const result: StyleClass = { id: existing?.id ?? now.toString(36) + Math.random().toString(36).slice(2, 9), name, rev: existing ? existing.rev + 1 : 1, groups: groupsData, createdAt: existing?.createdAt ?? now, updatedAt: now };
       if (msg.type === 'update') latest.classes[currentIndex] = result; else latest.classes.push(result);
       DocumentStorage.write(latest);
       text = msg.type === 'update' ? 'Class updated. Previously styled layers are unchanged.' : 'Saved “' + name + '”.';
