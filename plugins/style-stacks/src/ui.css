@@ -28,3 +28,10 @@
 #style-classes .sc-hint{font-size:10px;margin-top:8px}#style-classes [hidden]{display:none!important}
 #style-classes .sc-inline-editor{padding:10px;border:1px solid var(--figma-color-border,#ddd);margin-top:6px;border-radius:var(--ds-radius);overflow-wrap:anywhere}
 #style-classes .sc-actions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+#style-classes .sc-apply{display:flex;align-items:center;gap:6px}#style-classes .sc-apply .sc-name{flex:1;min-width:0}
+#style-classes .sc-tag{flex:0 0 auto;font-size:10px;font-weight:400;padding:1px 5px;border-radius:3px;background:var(--figma-color-bg-secondary,#f0f0f0);color:var(--figma-color-text-secondary,#777)}
+#style-classes .sc-toggle{display:flex;align-items:center;gap:5px;margin:0 0 10px}
+#style-classes #move-class{width:100%;margin-top:6px}
+#style-classes .sc-warning{margin:12px 16px 0;padding:10px;border:1px solid var(--figma-color-border-warning,#f3c11b);background:var(--figma-color-bg-warning-tertiary,#fff8e1);border-radius:var(--ds-radius);overflow-wrap:anywhere}
+#style-classes .sc-warning p{color:inherit}#style-classes .sc-warning ul{margin:6px 0;padding-left:16px}#style-classes .sc-warning li{margin:3px 0}
+#style-classes #library-list{max-height:210px;overflow:auto}#style-classes #library-list h3{font-size:11px;font-weight:400;margin:10px 0 0;color:var(--figma-color-text-secondary,#777)}#style-classes #library-list h3:first-child{margin-top:0}

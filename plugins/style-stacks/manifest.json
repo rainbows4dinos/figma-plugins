@@ -14,5 +14,12 @@
     }
   ],
   "ui": "ui.html",
-  "networkAccess": { "allowedDomains": ["none"] }
+  "networkAccess": {
+    "allowedDomains": [
+      "none"
+    ]
+  },
+  "permissions": [
+    "teamlibrary"
+  ]
 }
