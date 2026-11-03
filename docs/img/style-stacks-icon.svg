@@ -1,0 +1,24 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="g1" cx="0.95" cy="0.05" r="0.95"><stop stop-color="#FF9DBC"/><stop offset="1" stop-color="#FF9DBC" stop-opacity="0"/></radialGradient>
+    <radialGradient id="g2" cx="0.8" cy="1" r="0.85"><stop stop-color="#FFD2AE"/><stop offset="1" stop-color="#FFD2AE" stop-opacity="0"/></radialGradient>
+    <radialGradient id="g3" cx="0" cy="0.85" r="0.85"><stop stop-color="#DCC0FF"/><stop offset="1" stop-color="#DCC0FF" stop-opacity="0"/></radialGradient>
+    <linearGradient id="fill" x1="30" y1="50" x2="98" y2="86" gradientUnits="userSpaceOnUse"><stop stop-color="#FFC9A0"/><stop offset="1" stop-color="#F2558A"/></linearGradient>
+    <filter id="sh" filterUnits="userSpaceOnUse" x="-20" y="-20" width="168" height="168"><feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#8A2A5A" flood-opacity="0.35"/></filter>
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="4" stitchTiles="stitch" result="n"/>
+      <feColorMatrix in="n" type="saturate" values="0" result="g"/>
+      <feComponentTransfer in="g" result="c"><feFuncA type="linear" slope="0" intercept="0.18"/></feComponentTransfer>
+      <feBlend in="c" in2="SourceGraphic" mode="soft-light"/>
+    </filter>
+  </defs>
+  <g filter="url(#grain)">
+    <rect width="128" height="128" fill="#FBDDE6"/>
+    <rect width="128" height="128" fill="url(#g3)"/><rect width="128" height="128" fill="url(#g2)"/><rect width="128" height="128" fill="url(#g1)"/>
+  </g>
+  <g transform="translate(64 66) scale(1.18) translate(-64 -66)">
+    <path d="M60 64.5a8 8 0 0 1 8 0l30 17.3a2.5 2.5 0 0 1 0 4.4l-30 17.3a8 8 0 0 1-8 0l-30-17.3a2.5 2.5 0 0 1 0-4.4z" fill="#fff" filter="url(#sh)"/>
+    <path d="M60 45.5a8 8 0 0 1 8 0l30 17.3a2.5 2.5 0 0 1 0 4.4l-30 17.3a8 8 0 0 1-8 0l-30-17.3a2.5 2.5 0 0 1 0-4.4z" fill="url(#fill)"/>
+    <path d="M60.6 27.6a7 7 0 0 1 6.8 0l29.2 16.9a1.6 1.6 0 0 1 0 2.8l-29.2 16.9a7 7 0 0 1-6.8 0L31.4 47.3a1.6 1.6 0 0 1 0-2.8z" stroke="#2B0F24" stroke-width="5" stroke-linejoin="round"/>
+  </g>
+</svg>

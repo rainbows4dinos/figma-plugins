@@ -1,0 +1,400 @@
+{
+  "format": "style-stacks",
+  "schemaVersion": 2,
+  "exportedAt": "2026-11-03T21:57:22.189Z",
+  "source": "Seeens",
+  "classes": [
+    {
+      "id": "mvwzqo7ufd4ikq2",
+      "name": "Link Line",
+      "rev": 1,
+      "groups": {
+        "fills": {
+          "values": {
+            "fills": []
+          },
+          "bindings": {}
+        },
+        "strokes": {
+          "values": {
+            "strokes": [
+              {
+                "type": "SOLID",
+                "visible": true,
+                "opacity": 1,
+                "blendMode": "NORMAL",
+                "color": {
+                  "r": 0.0784313753247261,
+                  "g": 0.0784313753247261,
+                  "b": 0.0784313753247261
+                },
+                "boundVariables": {
+                  "color": {
+                    "$variable": {
+                      "id": "VariableID:9:26",
+                      "key": "c78a1080697ff47592d4ad492f9918fcb2f46e49",
+                      "remote": false,
+                      "name": "color/border/strong"
+                    }
+                  }
+                }
+              }
+            ],
+            "strokeTopWeight": 0,
+            "strokeRightWeight": 0,
+            "strokeBottomWeight": 1,
+            "strokeLeftWeight": 0,
+            "strokeAlign": "OUTSIDE",
+            "dashPattern": [
+              2,
+              2
+            ],
+            "strokeCap": "NONE",
+            "strokeJoin": "MITER",
+            "strokeMiterLimit": 4
+          },
+          "bindings": {}
+        },
+        "radii": {
+          "values": {
+            "cornerRadius": 0,
+            "topLeftRadius": 0,
+            "topRightRadius": 0,
+            "bottomLeftRadius": 0,
+            "bottomRightRadius": 0,
+            "cornerSmoothing": 0
+          },
+          "bindings": {}
+        },
+        "effects": {
+          "values": {
+            "effects": []
+          },
+          "bindings": {}
+        },
+        "layout": {
+          "values": {
+            "layoutMode": "HORIZONTAL",
+            "layoutWrap": "NO_WRAP",
+            "paddingLeft": 0,
+            "paddingRight": 0,
+            "paddingTop": 0,
+            "paddingBottom": 0,
+            "itemSpacing": 4,
+            "counterAxisSpacing": 0,
+            "primaryAxisAlignItems": "CENTER",
+            "counterAxisAlignItems": "CENTER",
+            "counterAxisAlignContent": "AUTO",
+            "itemReverseZIndex": false,
+            "strokesIncludedInLayout": false
+          },
+          "bindings": {}
+        }
+      },
+      "createdAt": 1793486811162,
+      "updatedAt": 1793486811162
+    },
+    {
+      "id": "mvws8sy8k67vsuv",
+      "name": "Dot Grid BG",
+      "rev": 1,
+      "groups": {
+        "fills": {
+          "values": {
+            "fills": [
+              {
+                "type": "SOLID",
+                "visible": true,
+                "opacity": 1,
+                "blendMode": "NORMAL",
+                "color": {
+                  "r": 0.8941176533699036,
+                  "g": 0.8941176533699036,
+                  "b": 0.8745098114013672
+                },
+                "boundVariables": {
+                  "color": {
+                    "$variable": {
+                      "id": "VariableID:9:19",
+                      "key": "551525802d242c860f72729cc17ab2a079e51c37",
+                      "remote": false,
+                      "name": "color/bg/ground"
+                    }
+                  }
+                }
+              },
+              {
+                "type": "PATTERN",
+                "visible": true,
+                "opacity": 1,
+                "blendMode": "NORMAL",
+                "sourceNodeId": "33:103",
+                "tileType": "RECTANGULAR",
+                "scalingFactor": 1,
+                "spacing": {
+                  "x": 0,
+                  "y": 0
+                },
+                "horizontalAlignment": "START",
+                "verticalAlignment": "START"
+              }
+            ]
+          },
+          "bindings": {}
+        },
+        "strokes": {
+          "values": {
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeTopWeight": 1,
+            "strokeRightWeight": 1,
+            "strokeBottomWeight": 1,
+            "strokeLeftWeight": 1,
+            "strokeAlign": "INSIDE",
+            "dashPattern": [],
+            "strokeCap": "NONE",
+            "strokeJoin": "MITER",
+            "strokeMiterLimit": 4
+          },
+          "bindings": {}
+        },
+        "effects": {
+          "values": {
+            "effects": []
+          },
+          "bindings": {}
+        }
+      },
+      "createdAt": 1793474220176,
+      "updatedAt": 1793474245003
+    },
+    {
+      "id": "mvyjbqjmecpwqvh",
+      "name": "Display Title",
+      "rev": 1,
+      "groups": {
+        "fills": {
+          "values": {
+            "fills": [
+              {
+                "type": "SOLID",
+                "visible": true,
+                "opacity": 1,
+                "blendMode": "NORMAL",
+                "color": {
+                  "r": 0.0784313753247261,
+                  "g": 0.0784313753247261,
+                  "b": 0.0784313753247261
+                },
+                "boundVariables": {
+                  "color": {
+                    "$variable": {
+                      "id": "VariableID:9:23",
+                      "key": "30b105ebed41099af8ee203c1a814fe83e8b1169",
+                      "remote": false,
+                      "name": "color/text/primary"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "bindings": {}
+        },
+        "strokes": {
+          "values": {
+            "strokes": [],
+            "strokeWeight": 1,
+            "strokeAlign": "OUTSIDE",
+            "dashPattern": [],
+            "strokeCap": "NONE",
+            "strokeJoin": "MITER",
+            "strokeMiterLimit": 4
+          },
+          "bindings": {}
+        },
+        "effects": {
+          "values": {
+            "effects": [
+              {
+                "type": "TEXTURE",
+                "visible": true,
+                "radius": 1.5,
+                "boundVariables": {},
+                "noiseSize": 1.5,
+                "noiseSizeVector": {
+                  "x": 1.5,
+                  "y": 1.5
+                },
+                "clipToShape": true
+              },
+              {
+                "type": "NOISE",
+                "visible": true,
+                "boundVariables": {},
+                "noiseSize": 1.2000000476837158,
+                "noiseSizeVector": {
+                  "x": 1.2000000476837158,
+                  "y": 1.2000000476837158
+                },
+                "noiseType": "MONOTONE",
+                "color": {
+                  "r": 0.8939999938011169,
+                  "g": 0.8939999938011169,
+                  "b": 0.875,
+                  "a": 1
+                },
+                "density": 0.18000000715255737
+              }
+            ]
+          },
+          "bindings": {},
+          "style": {
+            "id": "S:63992fc12842730c9a74c573875aca01eaa93ed8,",
+            "key": "63992fc12842730c9a74c573875aca01eaa93ed8",
+            "remote": false,
+            "name": "Texture/Rub-down"
+          }
+        }
+      },
+      "createdAt": 1793580172834,
+      "updatedAt": 1793580172834
+    },
+    {
+      "id": "mw18951mvuskz8r",
+      "name": "Window",
+      "rev": 1,
+      "groups": {
+        "fills": {
+          "values": {
+            "fills": [
+              {
+                "type": "SOLID",
+                "visible": true,
+                "opacity": 1,
+                "blendMode": "NORMAL",
+                "color": {
+                  "r": 0.9725490212440491,
+                  "g": 0.9686274528503418,
+                  "b": 0.9529411792755127
+                },
+                "boundVariables": {
+                  "color": {
+                    "$variable": {
+                      "id": "VariableID:9:20",
+                      "key": "8d8570ca1890ac71e6c53b1f592f130917a41b95",
+                      "remote": false,
+                      "name": "color/bg/surface"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "bindings": {}
+        },
+        "strokes": {
+          "values": {
+            "strokes": [
+              {
+                "type": "SOLID",
+                "visible": true,
+                "opacity": 1,
+                "blendMode": "NORMAL",
+                "color": {
+                  "r": 0.0784313753247261,
+                  "g": 0.0784313753247261,
+                  "b": 0.0784313753247261
+                },
+                "boundVariables": {
+                  "color": {
+                    "$variable": {
+                      "id": "VariableID:9:26",
+                      "key": "c78a1080697ff47592d4ad492f9918fcb2f46e49",
+                      "remote": false,
+                      "name": "color/border/strong"
+                    }
+                  }
+                }
+              }
+            ],
+            "strokeWeight": 1.5,
+            "strokeTopWeight": 1.5,
+            "strokeRightWeight": 1.5,
+            "strokeBottomWeight": 1.5,
+            "strokeLeftWeight": 1.5,
+            "strokeAlign": "INSIDE",
+            "dashPattern": [],
+            "strokeCap": "NONE",
+            "strokeJoin": "MITER",
+            "strokeMiterLimit": 4
+          },
+          "bindings": {}
+        },
+        "radii": {
+          "values": {
+            "cornerRadius": 0,
+            "topLeftRadius": 0,
+            "topRightRadius": 0,
+            "bottomLeftRadius": 0,
+            "bottomRightRadius": 0,
+            "cornerSmoothing": 0
+          },
+          "bindings": {}
+        },
+        "effects": {
+          "values": {
+            "effects": [
+              {
+                "type": "DROP_SHADOW",
+                "visible": true,
+                "radius": 0,
+                "boundVariables": {},
+                "color": {
+                  "r": 0.0784313753247261,
+                  "g": 0.0784313753247261,
+                  "b": 0.0784313753247261,
+                  "a": 1
+                },
+                "offset": {
+                  "x": 5,
+                  "y": 5
+                },
+                "spread": 0,
+                "blendMode": "NORMAL",
+                "showShadowBehindNode": true
+              }
+            ]
+          },
+          "bindings": {},
+          "style": {
+            "id": "S:07e43ba1fb26ad7df1210ae33daa4e60399380dc,",
+            "key": "07e43ba1fb26ad7df1210ae33daa4e60399380dc",
+            "remote": false,
+            "name": "Shadow/Hard"
+          }
+        },
+        "layout": {
+          "values": {
+            "layoutMode": "VERTICAL",
+            "layoutWrap": "NO_WRAP",
+            "paddingLeft": 0,
+            "paddingRight": 0,
+            "paddingTop": 0,
+            "paddingBottom": 0,
+            "itemSpacing": 0,
+            "counterAxisSpacing": 0,
+            "primaryAxisAlignItems": "MIN",
+            "counterAxisAlignItems": "MIN",
+            "counterAxisAlignContent": "AUTO",
+            "itemReverseZIndex": false,
+            "strokesIncludedInLayout": true
+          },
+          "bindings": {}
+        }
+      },
+      "createdAt": 1793742974410,
+      "updatedAt": 1793742974410
+    }
+  ]
+}
