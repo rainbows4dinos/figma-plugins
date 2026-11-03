@@ -8,14 +8,16 @@ Classes are reusable recipes, not live links: updating a class does not change l
 
 ## Features
 
-- **Save** a class from the selected layer, choosing which property groups to include:
+- **Find** classes fast: search, plus collapsible groups by source (this file, then each library) and by slash folder (`card/elevated` sits in a `card` folder). Small icons on each row show what a class contains.
+- **Save** a class from the selected layer with **+**, choosing which property groups to include:
   - Fills
   - Strokes (weight, alignment, dash)
   - Corner radii
   - Effects
   - Auto Layout (direction, padding, spacing, alignment)
 - **Apply** a class to one or many selected layers with one click. Only the saved groups are applied; everything else is preserved.
-- **Manage** classes: rename, update from the current selection, delete.
+- **Manage** classes from the details view (**⋯** on a row): preview, contents with token names, rename, update from the current selection, add to library, export, delete.
+- **Import and export** classes as JSON from the header **⋯** menu: export all, export selected, or one class from its details. Import shows which names already exist and lets you keep both, replace or skip. Variables and styles are matched to the new file by key; anything it doesn't have falls back to plain values.
 - Preserves **variable bindings** and **native styles** where the Plugin API allows, with saved literal values as a fallback.
 - Classes are stored in the Figma document (plugin data), so they persist when the file is reopened. No accounts, no network access, no dependencies at runtime.
 
@@ -23,8 +25,8 @@ Classes are reusable recipes, not live links: updating a class does not change l
 
 Design system teams can share classes through a Figma library, the same way they share components.
 
-1. **Save to library.** In the library file, check **Add to library** when saving a class, or use **Edit → Add to library** on an existing one. Then publish the library.
-2. **Pick and apply.** In any file that uses the library, its classes appear under **From libraries**. Applying one always uses the latest published version, with no library update to accept.
+1. **Save to library.** In the library file, choose **Save to: Library** when saving a class, or use **Add to library** in an existing class's details menu. Then publish the library.
+2. **Pick and apply.** In any file that uses the library, its classes appear in their own group, named after the library. Applying one always uses the latest published version, with no library update to accept.
 3. **Portability warning.** Before a class goes into the library, Style Stacks warns about anything that won't work in other files: variables or styles that are hidden or not yet published, raw values that match a token but aren't linked to it, and image or pattern fills.
 
 Library classes can only be edited in their library file.

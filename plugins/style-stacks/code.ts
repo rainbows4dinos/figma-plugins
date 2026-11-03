@@ -492,6 +492,132 @@ const Application = {
   },
 };
 
+// Describe module: what a class contains, in words and CSS, for list icons and the details view.
+// Pure reads of the stored recipe; token names come from references captured with schema v2.
+type Preview = { fill?: string; stroke?: string; strokeWidth?: number; radius?: string; shadow?: string };
+type Summary = { id: string; name: string; groups: Group[]; library: boolean; preview: Preview; contents: Partial<Record<Group, string>> };
+const Describe = {
+  num(n: number): string { return String(Math.round(n * 100) / 100); },
+  rgb(c: Record<string, number>, alpha = 1): string {
+    const ch = (n: number) => Math.round(Math.max(0, Math.min(1, n)) * 255);
+    return 'rgba(' + ch(c.r) + ',' + ch(c.g) + ',' + ch(c.b) + ',' + Describe.num(alpha) + ')';
+  },
+  hex(c: Record<string, number>, alpha = 1): string {
+    const part = (n: number) => Math.round(Math.max(0, Math.min(1, n)) * 255).toString(16).padStart(2, '0');
+    return '#' + (part(c.r) + part(c.g) + part(c.b)).toUpperCase() + (alpha < 0.995 ? ' ' + Math.round(alpha * 100) + '%' : '');
+  },
+  token(value: Json | undefined): string | undefined {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined;
+    const ref = ('$variable' in value ? value.$variable : value) as Record<string, Json> | null;
+    return ref && typeof ref.name === 'string' && ref.name ? ref.name : undefined;
+  },
+  paint(paints: Json | undefined, style?: Reference): { css?: string; label?: string } {
+    if (!Array.isArray(paints)) return {};
+    const visible = (paints as Record<string, Json>[]).filter(p => p && p.visible !== false);
+    const top = visible[visible.length - 1];
+    if (!top) return { label: 'None' };
+    const more = visible.length > 1 ? ' + ' + (visible.length - 1) + ' more' : '';
+    if (style?.name) return { css: top.type === 'SOLID' && top.color ? Describe.rgb(top.color as Record<string, number>, typeof top.opacity === 'number' ? top.opacity : 1) : undefined, label: style.name + ' (style)' };
+    if (top.type === 'SOLID' && top.color && typeof top.color === 'object') {
+      const c = top.color as Record<string, number>, a = typeof top.opacity === 'number' ? top.opacity : 1;
+      const bound = top.boundVariables as Record<string, Json> | undefined;
+      return { css: Describe.rgb(c, a), label: (Describe.token(bound?.color) ?? Describe.hex(c, a)) + more };
+    }
+    if (String(top.type).startsWith('GRADIENT')) return { css: 'linear-gradient(135deg,#bbb,#666)', label: 'Gradient' + more };
+    if (top.type === 'IMAGE') return { css: 'repeating-conic-gradient(#ccc 0 25%,#fff 0 50%) 0 0/8px 8px', label: 'Image' + more };
+    return { label: String(top.type).charAt(0) + String(top.type).slice(1).toLowerCase() + more };
+  },
+  summary(c: StyleClass, library: boolean): Summary {
+    const preview: Preview = {}, contents: Partial<Record<Group, string>> = {};
+    const g = c.groups;
+    if (g.fills) {
+      const fill = Describe.paint(g.fills.values.fills, g.fills.style);
+      preview.fill = fill.css; contents.fills = fill.label ?? 'Fills';
+    }
+    if (g.strokes) {
+      const v = g.strokes.values, stroke = Describe.paint(v.strokes, g.strokes.style);
+      const width = typeof v.strokeWeight === 'number' ? v.strokeWeight : typeof v.strokeTopWeight === 'number' ? v.strokeTopWeight : 1;
+      const widthToken = Describe.token(g.strokes.bindings.strokeWeight) ?? Describe.token(g.strokes.bindings.strokeTopWeight);
+      preview.stroke = stroke.css; preview.strokeWidth = width;
+      contents.strokes = (stroke.label ?? 'Stroke') + ', ' + (widthToken ?? Describe.num(width) + 'px') + (typeof v.strokeAlign === 'string' ? ' ' + v.strokeAlign.toLowerCase() : '');
+    }
+    if (g.radii) {
+      const v = g.radii.values, b = g.radii.bindings;
+      const sides = ['topLeftRadius', 'topRightRadius', 'bottomRightRadius', 'bottomLeftRadius'].map(k => typeof v[k] === 'number' ? v[k] as number : typeof v.cornerRadius === 'number' ? v.cornerRadius : 0);
+      const same = sides.every(n => n === sides[0]);
+      preview.radius = sides.map(n => Math.min(n, 14) + 'px').join(' ');
+      const token = Describe.token(b.topLeftRadius) ?? Describe.token(b.cornerRadius);
+      contents.radii = same ? (token ?? Describe.num(sides[0]) + 'px') : sides.map(Describe.num).join(' / ') + 'px';
+    }
+    if (g.effects) {
+      const effects = (Array.isArray(g.effects.values.effects) ? g.effects.values.effects : []) as Record<string, Json>[];
+      const shadows = effects.filter(e => e.visible !== false && (e.type === 'DROP_SHADOW' || e.type === 'INNER_SHADOW'));
+      preview.shadow = shadows.map(e => {
+        const o = (e.offset ?? { x: 0, y: 0 }) as Record<string, number>, c = (e.color ?? { r: 0, g: 0, b: 0, a: 0.25 }) as Record<string, number>;
+        return (e.type === 'INNER_SHADOW' ? 'inset ' : '') + Math.round(o.x / 2) + 'px ' + Math.round(o.y / 2) + 'px ' + Math.round((e.radius as number ?? 0) / 2) + 'px ' + Describe.rgb(c, c.a ?? 1);
+      }).join(',') || undefined;
+      const names: Record<string, string> = { DROP_SHADOW: 'Drop shadow', INNER_SHADOW: 'Inner shadow', LAYER_BLUR: 'Layer blur', BACKGROUND_BLUR: 'Background blur' };
+      const kinds = effects.filter(e => e.visible !== false).map(e => names[e.type as string] ?? 'Effect');
+      contents.effects = g.effects.style?.name ? g.effects.style.name + ' (style)' : kinds.length ? [...new Set(kinds)].map(k => { const n = kinds.filter(x => x === k).length; return n > 1 ? n + ' × ' + k.toLowerCase() : k; }).join(', ') : 'None';
+    }
+    if (g.layout) {
+      const v = g.layout.values, b = g.layout.bindings;
+      const dir = v.layoutMode === 'HORIZONTAL' ? 'Horizontal' : v.layoutMode === 'VERTICAL' ? 'Vertical' : 'No Auto Layout';
+      const pads = ['paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'].map(k => typeof v[k] === 'number' ? v[k] as number : 0);
+      const padToken = Describe.token(b.paddingTop);
+      const pad = pads.every(n => n === pads[0]) ? (padToken ?? Describe.num(pads[0])) : pads.map(Describe.num).join(' / ');
+      const gap = Describe.token(b.itemSpacing) ?? (typeof v.itemSpacing === 'number' ? Describe.num(v.itemSpacing) : '0');
+      contents.layout = v.layoutMode === 'NONE' ? dir : dir + ', padding ' + pad + ', gap ' + gap;
+    }
+    return { id: c.id, name: c.name, groups: GROUPS.filter(k => k in g), library, preview, contents };
+  },
+};
+
+// Transfer module: JSON export and import. Exports keep references as captured; on import, references are
+// matched to this file's variables and styles by key, and anything else resolves by key at apply time.
+type ExportFile = { format: 'style-stacks'; schemaVersion: number; exportedAt: string; source: string; classes: StyleClass[] };
+type ImportMode = 'skip' | 'replace' | 'keep';
+const Transfer = {
+  build(classes: StyleClass[]): ExportFile {
+    return { format: 'style-stacks', schemaVersion: SCHEMA_VERSION, exportedAt: new Date().toISOString(), source: figma.root.name, classes };
+  },
+  parse(data: unknown): StyleClass[] {
+    const file = data as Partial<ExportFile> | null;
+    if (!file || typeof file !== 'object' || !Array.isArray(file.classes)) throw new Error('That file isn’t a Style Stacks export.');
+    if (typeof file.schemaVersion === 'number' && file.schemaVersion > SCHEMA_VERSION) throw new Error('That file was exported from a newer version of Style Stacks. Update the plugin to import it.');
+    try { return Schema.upgrade({ schemaVersion: file.schemaVersion ?? 1, classes: file.classes }).classes; }
+    catch { throw new Error('That file is damaged or isn’t a Style Stacks export.'); }
+  },
+  refs(cls: StyleClass): Reference[] {
+    const refs: Reference[] = [];
+    for (const recipe of Object.values(cls.groups)) {
+      if (!recipe) continue;
+      Portability.collect(recipe.values, refs);
+      refs.push(...Object.values(recipe.bindings));
+      if (recipe.style) refs.push(recipe.style);
+    }
+    return refs;
+  },
+  async localKeys(): Promise<Map<string, string>> {
+    const map = new Map<string, string>();
+    for (const v of await figma.variables.getLocalVariablesAsync()) map.set(v.key, v.id);
+    const styles = [...await figma.getLocalPaintStylesAsync(), ...await figma.getLocalEffectStylesAsync()];
+    for (const st of styles) map.set(st.key, st.id);
+    return map;
+  },
+  // Local ids differ between files and can collide, so never trust an imported id on its own.
+  localize(cls: StyleClass, keys: Map<string, string>): { cls: StyleClass; unlinked: number } {
+    const copy = JSON.parse(JSON.stringify(cls)) as StyleClass;
+    let unlinked = 0;
+    for (const ref of Transfer.refs(copy)) {
+      const local = ref.key ? keys.get(ref.key) : undefined;
+      if (local) { ref.id = local; ref.remote = false; }
+      else { ref.id = ''; ref.remote = !!ref.key; if (!ref.key) unlinked++; }
+    }
+    return { cls: copy, unlinked };
+  },
+};
+
 function editable(node: SceneNode): boolean {
   let ancestor: BaseNode | null = node;
   while (ancestor && ancestor.type !== 'PAGE' && ancestor.type !== 'DOCUMENT') {
@@ -528,11 +654,10 @@ async function pushState(): Promise<void> {
     const selection = figma.currentPage.selection;
     const available = selection.filter(editable);
     const source = selection.length === 1 && available.length === 1 ? available[0] : null;
-    const summary = (c: StyleClass, inLibrary: boolean) => ({ id: c.id, name: c.name, groups: Object.keys(c.groups), library: inLibrary });
-    figma.ui.postMessage({ type: 'state', libraryClasses: catalog, classes: [...local.map(c => summary(c, false)), ...library.map(c => summary(c, true))], count: available.length, total: selection.length, source: source?.name ?? null, groups: source ? GROUPS.filter(g => Capture.supported(source, g)) : [] });
+    figma.ui.postMessage({ type: 'state', libraryClasses: catalog, classes: [...local.map(c => Describe.summary(c, false)), ...library.map(c => Describe.summary(c, true))], count: available.length, total: selection.length, source: source?.name ?? null, groups: source ? GROUPS.filter(g => Capture.supported(source, g)) : [] });
   } catch (error) { figma.ui.postMessage({ type: 'feedback', error: true, text: messageOf(error) }); }
 }
-type Message = { type: string; requestId?: string; id?: string; key?: string; name?: string; groups?: Group[]; library?: boolean; confirmed?: boolean };
+type Message = { type: string; requestId?: string; id?: string; ids?: string[]; key?: string; name?: string; groups?: Group[]; library?: boolean; confirmed?: boolean; data?: unknown; mode?: ImportMode };
 let busy = false;
 // Custom plugins are namespaced by the host; the manifest UUID is not the routing ID.
 figma.showUI(__html__.replace('"__STYLE_STACKS_RUNTIME_ID__"', JSON.stringify(figma.pluginId ?? '')), { width: 340, height: 620, themeColors: true });
@@ -616,6 +741,47 @@ figma.ui.onmessage = async (msg: Message) => {
         db.classes = db.classes.filter(c => c.id !== found.cls.id);
         DocumentStorage.write(db); text = 'Class deleted.';
       }
+    } else if (msg.type === 'export') {
+      const all = [...DocumentStorage.read().classes, ...await libraryClasses()];
+      const chosen = msg.ids ? all.filter(c => msg.ids!.includes(c.id)) : all;
+      if (!chosen.length) throw new Error('No classes to export.');
+      figma.ui.postMessage({ type: 'feedback', requestId: msg.requestId, error: false, export: Transfer.build(chosen), text: 'Exported ' + chosen.length + (chosen.length === 1 ? ' class.' : ' classes.') });
+      return;
+    } else if (msg.type === 'import-preview' || msg.type === 'import') {
+      const incoming = Transfer.parse(msg.data);
+      if (!incoming.length) throw new Error('That file has no classes in it.');
+      const keys = await Transfer.localKeys();
+      const existing = [...DocumentStorage.read().classes.map(c => ({ cls: c, library: false })), ...(await libraryClasses()).map(c => ({ cls: c, library: true }))];
+      const byName = (name: string) => existing.find(e => e.cls.name.toLowerCase() === name.toLowerCase());
+      if (msg.type === 'import-preview') {
+        const classes = incoming.map(c => ({ name: c.name, groups: GROUPS.filter(g => g in c.groups), clash: !!byName(c.name), unlinked: Transfer.localize(c, keys).unlinked > 0 }));
+        figma.ui.postMessage({ type: 'feedback', requestId: msg.requestId, error: false, importPreview: { classes }, text: '' });
+        return;
+      }
+      const mode: ImportMode = msg.mode === 'skip' || msg.mode === 'replace' ? msg.mode : 'keep';
+      const db = DocumentStorage.read();
+      const taken = new Set(existing.map(e => e.cls.name.toLowerCase()));
+      let added = 0, replaced = 0, skipped = 0;
+      const now = Date.now();
+      for (const [index, raw] of incoming.entries()) {
+        const { cls } = Transfer.localize(raw, keys);
+        const clash = byName(cls.name);
+        if (clash && mode === 'skip') { skipped++; continue; }
+        if (clash && mode === 'replace') {
+          const next: StyleClass = { ...cls, id: clash.cls.id, name: clash.cls.name, rev: clash.cls.rev + 1, createdAt: clash.cls.createdAt, updatedAt: now };
+          if (clash.library) await LibraryStorage.write(next);
+          else db.classes = db.classes.map(c => c.id === next.id ? next : c);
+          replaced++; continue;
+        }
+        let name = cls.name, n = 2;
+        while (taken.has(name.toLowerCase())) { const suffix = ' ' + n++; name = cls.name.slice(0, 80 - suffix.length) + suffix; }
+        taken.add(name.toLowerCase());
+        db.classes.push({ ...cls, id: now.toString(36) + index.toString(36) + Math.random().toString(36).slice(2, 7), name, rev: 1, createdAt: now, updatedAt: now });
+        added++;
+      }
+      DocumentStorage.write(db);
+      const parts = [added && added + ' added', replaced && replaced + ' replaced', skipped && skipped + ' skipped'].filter(Boolean);
+      text = 'Imported classes: ' + (parts.join(', ') || 'nothing changed') + '.';
     } else if (msg.type === 'apply') {
       // Classes from connected libraries are loaded fresh by key; their references resolve by key too.
       const byKey = !!msg.key;
