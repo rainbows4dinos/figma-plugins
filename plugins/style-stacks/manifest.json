@@ -1,6 +1,6 @@
 {
   "name": "Style Stacks",
-  "id": "bfc5a14b-b1c2-4cbe-85e2-4173cdd491c8",
+  "id": "1699582515229984533",
   "api": "1.0.0",
   "main": "code.js",
   "documentAccess": "dynamic-page",
@@ -9,7 +9,7 @@
   ],
   "relaunchButtons": [
     {
-      "command": "bfc5a14b-b1c2-4cbe-85e2-4173cdd491c8",
+      "command": "1699582515229984533",
       "name": "Style Stacks"
     }
   ],
