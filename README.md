@@ -2,6 +2,12 @@
 
 Monorepo for my Figma plugins and the design system they share.
 
+## Plugins
+
+<a href="plugins/style-stacks"><img src="docs/img/readme/style-stacks-cover.jpg" alt="Style Stacks" width="560"></a>
+
+**[Style Stacks](plugins/style-stacks)**: save a layer's fills, strokes, corners, effects and Auto Layout as a class, apply it anywhere, and share classes through your library.
+
 ## Layout
 
 | Path | Purpose |
